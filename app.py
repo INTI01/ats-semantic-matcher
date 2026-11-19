@@ -43,7 +43,7 @@ col_m2.metric("Modelo PLN", "MiniLM-L12-v2")
 col_m3.metric(
     "Persistencia",
     "PostgreSQL / Supabase"
-    if os.getenv("DATABASE_URL")
+    if not database.DATABASE_URL.startswith("sqlite")
     else "SQLite Local",
 )
 

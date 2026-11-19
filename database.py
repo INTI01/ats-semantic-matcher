@@ -3,9 +3,23 @@ import os
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, create_engine
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
-# Usa DATABASE_URL si existe (útil luego para Supabase/PostgreSQL), o SQLite local por defecto
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///ats_database.db")
 
+# Usa DATABASE_URL si existe 
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+  try:
+    import streamlit as st
+
+    if "DATABASE_URL" in st.secrets:
+      DATABASE_URL = st.secrets["DATABASE_URL"]
+  except Exception:
+    pass
+
+if not DATABASE_URL:
+  DATABASE_URL = "sqlite:///ats_database.db"
+
+if DATABASE_URL.startswith("postgres://"):
+  DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 # SQLite necesita check_same_thread=False para trabajar con Streamlit
 connect_args = (
     {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
