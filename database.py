@@ -19,7 +19,14 @@ if not DATABASE_URL:
   DATABASE_URL = "sqlite:///ats_database.db"
 
 if DATABASE_URL.startswith("postgres://"):
-  DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+  DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif (
+    DATABASE_URL.startswith("postgresql://")
+    and "+psycopg" not in DATABASE_URL
+):
+  DATABASE_URL = DATABASE_URL.replace(
+      "postgresql://", "postgresql+psycopg://", 1
+  )
 # SQLite necesita check_same_thread=False para trabajar con Streamlit
 connect_args = (
     {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
